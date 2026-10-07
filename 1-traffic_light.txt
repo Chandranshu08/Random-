@@ -1,0 +1,44 @@
+EXPERIMENT 2 : PLC LADDER - TRAFFIC LIGHT (RED 45 s, YELLOW 5 s, GREEN 40 s)
+=========================================================================
+AIM: Develop ladder logic for a traffic light system using the online PLC simulator.
+
+STEP 1 - CREATE VARIABLES (name / type)
+  Start    Bool   (set to True to run)
+  Memory   Bool   (used to restart the cycle)
+  red      Bool
+  yellow   Bool
+  green    Bool
+  T1       Timer  PT = 45000   (ms)  -> RED time
+  T2       Timer  PT = 5000    (ms)  -> YELLOW time
+  T3       Timer  PT = 40000   (ms)  -> GREEN time
+  (exam tip: scale down e.g. 4500 / 500 / 4000 to see it quickly)
+
+STEP 2 - DRAW THE 3 RUNGS
+
+ Rung 1:
+ |--[ Start ]--[/ Memory ]--( red )--[ T1 TON  PT=45000 ]--------------( yellow )--|
+
+ Rung 2:
+ |--[ yellow ]--[ T2 TON  PT=5000 ]-------------------------------------( green )--|
+
+ Rung 3:
+ |--[ green ]--[ T3 TON  PT=40000 ]------------------------------------( Memory )--|
+
+STEP 3 - RUN / HOW IT WORKS
+  1. Set Start = True.
+  2. Rung 1: Start is ON and Memory is OFF (NC contact passes) -> RED coil ON, T1 starts counting.
+  3. After 45 s T1 done -> YELLOW ON.
+  4. Rung 2: yellow starts T2; after 5 s -> GREEN ON.
+  5. Rung 3: green starts T3; after 40 s -> Memory ON.
+  6. Memory (NC contact in Rung 1) opens -> everything resets -> Memory drops -> cycle restarts.
+  Total cycle = 45 + 5 + 40 = 90 s.
+
+NOTE (if examiner asks): in this simple version red coil stays energised while yellow/green are
+  on. In a real junction you would add NC contacts (/yellow, /green) so only one lamp is ON.
+
+CONCLUSION: Timer based sequential control (RED -> YELLOW -> GREEN) was implemented in ladder logic.
+
+POST-EXPERIMENT ANSWERS (short)
+  PLC = ruggedized industrial computer; parts = CPU, memory, power supply, I/O modules, programming port.
+  I/O modules = interface between field devices and CPU (input: buttons/sensors, output: motors/lamps).
+  Ladder logic = relay-style graphical language; rungs of contacts (conditions) and coils (outputs).

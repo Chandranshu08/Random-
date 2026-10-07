@@ -1,0 +1,34 @@
+EXPERIMENT 3 : CONVEYOR WARNING LAMP + MOTOR START AFTER 30 s
+=========================================================================
+AIM: Blink a lamp (1 s ON / 1 s OFF) for 30 s, then start the motor automatically and stop the blinking.
+
+STEP 1 - VARIABLES
+  Start   Bool
+  led     Bool    (warning lamp)
+  x       Bool    (helper bit: makes the blink repeat; later latched to stop blinking)
+  Motor   Bool
+  T1      Timer   PT = 1000    (lamp OFF time)
+  T2      Timer   PT = 1000    (lamp ON time)
+  T3      Timer   PT = 30000   (warning period)
+
+STEP 2 - RUNGS
+
+ Rung 1 (blinker):
+ |--[ Start ]--[/ x ]--[ T1 TON PT=1000 ]--( led )--[ T2 TON PT=1000 ]--( x )--|
+
+ Rung 2 (30 s delay -> motor):
+ |--[ Start ]--[ T3 TON PT=30000 ]--( Motor )--( S x )--|
+
+ (Your lab file has Rung 2 without the Start contact - works too. Adding Start is cleaner.)
+
+STEP 3 - HOW IT WORKS
+  - Start ON, x OFF: T1 counts 1 s (lamp OFF), then lamp ON while T2 counts 1 s,
+    then x pulses ON -> /x opens -> timers reset -> lamp OFF -> repeats. (1 s OFF, 1 s ON blink)
+  - In parallel T3 counts 30 s.
+  - At 30 s: Motor turns ON and x is SET (latched). Latched x keeps /x open, so Rung 1 is dead
+    -> lamp stops blinking and stays OFF. Motor keeps running.
+  - To restart: set Start = False, reset x (or use a reset coil), set Start = True.
+
+EXPECTED: led blinks 30 s -> Motor = True, led = False permanently.
+
+CONCLUSION: Timers, contacts and a set coil implemented a safety warning + sequential start.

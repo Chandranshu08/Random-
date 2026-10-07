@@ -1,0 +1,29 @@
+PLC : START BUTTON -> MOTOR RUNS 10 s -> IDLE 10 s -> REPEAT IN LOOP (use timers)
+=========================================================================
+(Same trick as the blinker in Exp 3, just with 10 s timers.)
+
+STEP 1 - VARIABLES
+  Start   Bool    (start button)
+  idle    Bool    (True during the 10 s idle period)
+  x       Bool    (helper bit - restarts the cycle)
+  Motor   Bool
+  T1      Timer   PT = 10000   (motor run time)
+  T2      Timer   PT = 10000   (idle time)
+
+STEP 2 - RUNGS
+
+ Rung 1 (timing loop):
+ |--[ Start ]--[/ x ]--[ T1 TON PT=10000 ]--( idle )--[ T2 TON PT=10000 ]--( x )--|
+
+ Rung 2 (motor output):
+ |--[ Start ]--[/ idle ]--( Motor )|
+
+STEP 3 - HOW IT WORKS
+  - Start = True. idle is False, so Rung 2 turns Motor ON.
+  - T1 counts 10 s. When done -> idle ON -> Rung 2 opens -> Motor OFF.
+  - T2 counts the next 10 s of idle. When done -> x pulses ON.
+  - /x opens -> T1 and T2 reset -> idle OFF -> Motor ON again. Loop continues until Start = False.
+  Timeline: 0-10 s motor ON | 10-20 s motor OFF | 20-30 s motor ON ...
+
+TEST TIP: reduce to 2000 ms each in the simulator to see it fast, then change back to 10000.
+  If the simulator can't show x pulse (it is a single scan), it still works - same as the blink program.
